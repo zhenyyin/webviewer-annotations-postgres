@@ -1,0 +1,22 @@
+{
+  "name": "webviewer-annotations-postgres",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node tools/copy-webviewer-files.js",
+    "start": "node server/serve.js"
+  },
+  "author": "",
+  "devDependencies": {
+    "body-parser": "^1.20.3",
+    "express": "^4.21.2",
+    "fs-extra": "^11.3.0",
+    "open": "^10.1.0"
+  },
+  "dependencies": {
+    "@pdftron/webviewer": "^11.5.0",
+    "cors": "^2.8.5",
+    "pg": "^8.16.3"
+  }
+}
