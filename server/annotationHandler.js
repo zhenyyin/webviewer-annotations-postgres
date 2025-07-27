@@ -8,7 +8,10 @@ const LOCALHOST_DATABASE_URL = 'postgresql://wv1:wv2Odem25@localhost:5432/postgr
 
 // Configure PostgreSQL connection using environment variables
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || LOCALHOST_DATABASE_URL
+  connectionString: process.env.DATABASE_URL || LOCALHOST_DATABASE_URL,
+  ssl: process.env.DATABASE_URL ? {
+    rejectUnauthorized: false
+  } : false
 });
 
 module.exports = (app) => {
@@ -34,7 +37,7 @@ module.exports = (app) => {
         // Remove the row from the database
         await pool.query(
           `DELETE FROM ${TABLE} WHERE annotation_id = $1`,
-          [annotation_id]
+          [annotationId]
         );
       } else {
         // Save document ID, annotation ID and XFDF string to database
@@ -57,7 +60,7 @@ module.exports = (app) => {
     try {
       const documentId = req.query.documentId;
       const result = await pool.query(
-        `SELECT id, document_id, annotation_id, xfdf_data, created_at FROM ${TABLE} WHERE document_id = $1`,
+        `SELECT id, annotation_id, xfdf_data, created_at FROM ${TABLE} WHERE document_id = $1`,
         [documentId]
       );
       res.header('Content-Type', 'application/json');
