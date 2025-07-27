@@ -45,10 +45,6 @@ coverage/
 # Next.js build output
 .next
 
-# Gatsby files
-.cache/
-public
-
 # Temporary folders
 tmp/
 temp/
