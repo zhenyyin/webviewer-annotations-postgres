@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "node tools/copy-webviewer-files.js",
+    "build": "node tools/copy-webviewer-files.js",
     "start": "node server/serve.js"
   },
   "author": "",
@@ -18,5 +19,8 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "pg": "^8.16.3"
+  },
+  "engines": {
+    "node": "18.x"
   }
 }
