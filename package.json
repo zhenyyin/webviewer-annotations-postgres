@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "postinstall": "node tools/copy-webviewer-files.js",
+    "heroku-postbuild": "node tools/copy-webviewer-files.js",
     "build": "node tools/copy-webviewer-files.js",
     "start": "node server/serve.js"
   },
@@ -17,6 +18,7 @@
     "@pdftron/webviewer": "^11.5.0",
     "body-parser": "^1.20.3",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.21.2",
     "pg": "^8.16.3"
   },

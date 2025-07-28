@@ -3,16 +3,35 @@
 
 const { Pool } = require('pg');
 const TABLE = 'annotations';
-// const TABLE = 'webviewer_annotations';
-const LOCALHOST_DATABASE_URL = 'postgresql://wv1:wv2Odem25@localhost:5432/postgres';
 
-// Configure PostgreSQL connection using environment variables
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || LOCALHOST_DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? {
-    rejectUnauthorized: false
-  } : false
-});
+// Load environment variables from .env file (for local development)
+if (process.env.NODE_ENV !== 'production') {
+  require('dotenv').config();
+}
+
+// Database configuration using environment variables
+const getDatabaseConfig = () => {
+  // Use Heroku DATABASE_URL if available (production)
+  if (process.env.DATABASE_URL) {
+    return {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    };
+  }
+  
+  // Use local environment variables (development)
+  return {
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    database: process.env.DB_NAME,
+    ssl: false
+  };
+};
+
+// Configure PostgreSQL connection
+const pool = new Pool(getDatabaseConfig());
 
 module.exports = (app) => {
   // Create annotations table with columns documentId, annotationID and xfdfString
@@ -79,6 +98,38 @@ module.exports = (app) => {
     } catch (err) {
       console.error(err);
       res.status(500).send('Error dropping table');
+    }
+  });
+
+  // Admin route to view database data (for development/debugging)
+  app.get('/api/admin/annotations-data', async (req, res) => {
+    try {
+      const result = await pool.query(`SELECT * FROM ${TABLE} ORDER BY created_at DESC LIMIT 100`);
+      res.header('Content-Type', 'application/json');
+      res.status(200).json({
+        count: result.rows.length,
+        data: result.rows
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // Admin route to view table stats
+  app.get('/api/admin/annotations-stats', async (req, res) => {
+    try {
+      const countResult = await pool.query(`SELECT COUNT(*) as total FROM ${TABLE}`);
+      const recentResult = await pool.query(`SELECT COUNT(*) as recent FROM ${TABLE} WHERE created_at > NOW() - INTERVAL '24 hours'`);
+      
+      res.header('Content-Type', 'application/json');
+      res.status(200).json({
+        total_annotations: countResult.rows[0].total,
+        recent_annotations_24h: recentResult.rows[0].recent
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: err.message });
     }
   });
 }

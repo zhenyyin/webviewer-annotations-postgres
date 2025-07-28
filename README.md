@@ -23,15 +23,37 @@ cd webviewer-samples/webviewer-annotations-sqlite3 (postgres)
 npm install
 ```
 
-### Configure PostgreSQL
+### Configure Database
 
-Set the `DATABASE_URL` environment variable to point to your PostgreSQL instance. For example:
+#### Option 1: Using Environment Variables (Recommended)
 
-```
+1. Copy the example environment file:
+   ```bash
+   cp env.example .env
+   ```
+
+2. Edit the `.env` file with your database credentials:
+   ```bash
+   # Database Configuration
+   DB_USER=your_username
+   DB_PASSWORD=your_password
+   DB_HOST=localhost
+   DB_PORT=5432
+   DB_NAME=your_database_name
+   
+   # Environment
+   NODE_ENV=development
+   ```
+
+#### Option 2: Using DATABASE_URL
+
+Set the `DATABASE_URL` environment variable to point to your PostgreSQL instance:
+
+```bash
 export DATABASE_URL=postgresql://username:password@localhost:5432/yourdatabase
 ```
 
-If not set, the app will default to `postgresql://postgres:postgres@localhost:5432/postgres`.
+**Note:** The app will use `DATABASE_URL` if available (for production/Heroku), otherwise it will use the individual environment variables from the `.env` file.
 
 ## Run
 
@@ -45,4 +67,20 @@ npm start
 - Annotations will be automatically saved to the PostgreSQL database as you create and modify annotations
 - Load annotations by refreshing the app
 - Annotation data is now stored in your configured PostgreSQL database
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `DB_USER` | PostgreSQL username | `username` |
+| `DB_PASSWORD` | PostgreSQL password | `password` |
+| `DB_HOST` | PostgreSQL host | `localhost` |
+| `DB_PORT` | PostgreSQL port | `5432` |
+| `DB_NAME` | PostgreSQL database name | `postgres` |
+| `DATABASE_URL` | Full database connection URL | `null` |
+| `NODE_ENV` | Environment mode | `development` |
+
+## Deployment
+
+For production deployment (e.g., Heroku), the app will automatically use the `DATABASE_URL` environment variable if available.
 
